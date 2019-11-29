@@ -332,7 +332,7 @@
                   <i class="fa fa-comment-o"></i>
                 </span>
                 <a href="/%E8%A7%A3%E5%86%B3Idea%E6%97%A0%E6%B3%95%E8%AF%86%E5%88%ABLombok%E7%9A%84%E9%97%AE%E9%A2%98%EF%BC%88Mac%EF%BC%89/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count gitment-comments-count" data-xid="/%E8%A7%A3%E5%86%B3Idea%E6%97%A0%E6%B3%95%E8%AF%86%E5%88%ABLombok%E7%9A%84%E9%97%AE%E9%A2%98%EF%BC%88Mac%EF%BC%89/" itemprop="commentsCount"></span>
+                  <span class="post-comments-count valine-comment-count" data-xid="/%E8%A7%A3%E5%86%B3Idea%E6%97%A0%E6%B3%95%E8%AF%86%E5%88%ABLombok%E7%9A%84%E9%97%AE%E9%A2%98%EF%BC%88Mac%EF%BC%89/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -448,11 +448,7 @@
 
   
     <div class="comments" id="comments">
-      
-        <div id="gitment-container"></div>
-      
     </div>
-
   
 
 
@@ -555,7 +551,7 @@
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
-  <span class="author" itemprop="copyrightHolder">cfanning</span>
+  <span class="author" itemprop="copyrightHolder">RunAnt</span>
 
   
     <span class="post-meta-divider">|</span>
@@ -719,45 +715,30 @@
 
 
 
-<!-- LOCAL: You can save these files to your site and update links -->
-    
-        
-        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
-        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
-    
-<!-- END LOCAL -->
-
-    
-
-    
-      <script type="text/javascript">
-      function renderGitment(){
-        var gitment = new Gitmint({
-            id: window.location.pathname, 
-            owner: '',
-            repo: 'blog',
-            
-            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
-            
-            oauth: {
-            
-            
-                client_secret: '013d3fe3c2f72edb7446659aa2f2cb194e172048',
-            
-                client_id: 'b448bc9087474e4c9bee'
-            }});
-        gitment.render('gitment-container');
-      }
-
-      
-      renderGitment();
-      
-      </script>
-    
 
 
 
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine/dist/Valine.min.js"></script>
 
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'fK4WyhKzYpXJbMNKGx2fuwSH-gzGzoHsz',
+        appKey: 'qJ4mKFjDvjWCPmAF861wQleg',
+        placeholder: 'Just go go',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
 
 
 
