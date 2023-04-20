@@ -257,7 +257,194 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/goonmyblog-9.html" itemprop="url">不要停止寻找</a></h1>
+                <a class="post-title-link" href="/goonmyblog-9.html" itemprop="url">要坚持输出</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-04-20T21:21:09+08:00">
+                2023-04-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/wlb/" itemprop="url" rel="index">
+                    <span itemprop="name">wlb</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/goonmyblog-9.html#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/goonmyblog-9.html" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.1k 字
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  3 分钟
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>还是应该坚持写blog。虽然现在有了chatgpt，但个人的经验还是值得去分享的。<br>形式其实不限，主要是输出的内容对别人有价值，无论大小。<br>今天就说说最近在搞的读写分离吧，说来就想吐槽。在互联网时期，其实都没用过，即使QPS很高，并发很高，基本没用过。如今在传统金融行业，基本上都是产品外包制，花钱买厂商的系统和服务，这样一来，就存在利益博弈，无关技术。目前的情况来看，部分金融系统的架构，都是沿袭的单点架构，只不过从功能上象征性的进行了拆分，其实是伪微服务架构模式。在新版本的升级的时候，简单粗暴的直接从oracle切换到了mysql，但是代码层级并没有进行相应的优化和适配，大SQL、存储过程随处可见。这对于mysql来说，其实很不适应。再加上代码的野蛮写法，经常导致系统宕机无法稳定的使用，自从接手过后，一直处于优化过程中。除了规范代码写法外，继续优化SQL以及不必要的查询操作，限制全量数据的导出等。将各服务独立拆分部署，逐步形成真正的微服务架构模式。<br>不晓得同行是不是也是这种情况，这种模式其实比较适合开发，但是所有的坑都转嫁给了后续的运维支持人员。以及时不时的宕机事故，让人很头疼，满满的失败感。现场对于系统功能上，可能还有人比较熟悉了解，因为能直观的使用和感觉到，至于背后是如何搭建的，就不一定了。比如说对于中间件的使用，很随意，完全不考虑使用场景，百度（Google不能用）一下，就开始下载安装后生产使用。只有出了问题，才会发现原来是很多配置没有搞清楚，导致生产事故，导致持续告警。这样的系统，可能和祖传的屎山代码有的一拼，系统运维人员天天加班，也就知道是什么原因了。开发人员也不是经验丰富，伸手党居多，让搞系统的人很崩溃，当然解决办法也不是没有。因为毕竟这是工作，问题还是要继续解决。<br>人的精力是有限的，虽然说技多不压身，但要同时保持一定水平的技能，就意味着要付出更多的成本来保持不断的新知识的更新。对于开发职业来说，要想不被轻易淘汰，就要持续的学习新知识，更新自己的技能库，无论是理论知识还是手动实践，软硬技能都要跟上。建议有条件的还是找个梯子，这样在解决问题的时候，效率和质量都会提升很多。作为一个开发，没有自己的产品，不知道是不是太low。主要是没有产品思维不知道做啥，小程序、app，更早之前的网站啥的，其实也不是没有机会，可能真的兴趣不大吧～996的福报确实占用了很多时间。<br>对于身处金融行业的开发来说，其实面临很多问题，如技术栈不够新，不够深入，很多都是浅尝则止。当然工作是为了挣钱，多数人都是够用就好。也在情理之中，但是如果已入坑，就要多思考如何才能在解决问题的同时，能够提高自己的竞争力，这样即使要换坑，也能有人看得上，不至于说直接出圈，被淘汰。对于全栈一说，记得最早应该是16年的时候，吹的比较厉害。在小公司以及传统企业，其实就是这种情况，所有都要会，主要是为了解决问题。原理一知半解，机会导致后续很多问题，一直在不停的暴雷。久而久之自然就没人敢动系统代码了，每次升级都如临大敌，心惊胆颤。<br>问题既是机会，积极心态面对，就会有所收获。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <div>
+    
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.lichaofan.com/goonmyblog-10.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RunAnt">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RunAnt's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/goonmyblog-10.html" itemprop="url">不要停止寻找</a></h1>
         
 
         <div class="post-meta">
@@ -310,8 +497,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/goonmyblog-9.html#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/goonmyblog-9.html" itemprop="commentCount"></span>
+                <a href="/goonmyblog-10.html#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/goonmyblog-10.html" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1908,208 +2095,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.lichaofan.com/crazyandtalk.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RunAnt">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RunAnt's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/crazyandtalk.html" itemprop="url">疯言疯语</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-08-26T17:48:28+08:00">
-                2022-08-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/life/" itemprop="url" rel="index">
-                    <span itemprop="name">life</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/crazyandtalk.html#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/crazyandtalk.html" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  384 字
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  1 分钟
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>来源：<a href="https://github.com/ruanyf/weekly/blob/master/docs/issue-220.md" target="_blank" rel="noopener">https://github.com/ruanyf/weekly/blob/master/docs/issue-220.md</a><br>1、</p>
-<p>真的想做一个项目，那就开始得越快越好。早点做出有价值的成果，你会吸引到客户；如果做不出来，你就可以早点放弃，节省自己的时间，并了解哪里行不通。</p>
-<p>– 《不要建立自己的框架》</p>
-<p>2、</p>
-<p>如果你的旅行只是通过汽车/火车/飞机，你可能很难体会到骑自行车看到的世界有多丰富。一般来说，骑行的时候，你不会选择途径一个又一个沉闷的交通枢纽，而是沿着古老的路线，这些路线连接着数千年来人们的生活、历史和风景。</p>
-<p>– Hacker News 读者</p>
-<p>3、</p>
-<p>年轻时，我真的很烦产品经理，他们总是让我预估从未做过的任务的工期。</p>
-<p>现在我意识到，产品经理真的需要在日程表中填一个日期，这样他们才有东西交代。而且，我自己的数字至少比他们随便想一个数字，要更准确一些。</p>
-<p>– Hacker News 读者</p>
-<p>4、</p>
-<p>现在想靠开发手机 App 赚钱，太难了。市场完全不同了，客户已经厌倦下载更多的 App，更不用说为它们付费了。</p>
-<p>– Hacker News 读者</p>
-<p>5、</p>
-<p>任何一个人都是一条已经存在40亿年的生物繁殖链条的最终结果。40亿年中，这条链条每一环的繁殖都没有失败，才有了你。</p>
-<p>– Hacker News 读者</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <div>
-    
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2160,7 +2145,7 @@
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">32</span>
+                  <span class="site-state-item-count">33</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2182,7 +2167,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-count">20</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -2237,7 +2222,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共44.8k字</span>
+  <span class="post-count">博客全站共45.9k字</span>
 </div>
 <span class="post-meta-divider">|</span>
 
