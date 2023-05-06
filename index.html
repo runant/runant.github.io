@@ -238,6 +238,380 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.lichaofan.com/goonmyblog-15.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RunAnt">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RunAnt's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/goonmyblog-15.html" itemprop="url">docker扩容</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-05-06T16:05:22+08:00">
+                2023-05-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/work/" itemprop="url" rel="index">
+                    <span itemprop="name">work</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/goonmyblog-15.html#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/goonmyblog-15.html" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  703 字
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  2 分钟
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>早些时候，由于开发协作需要，尝试搭建一套dzzoffice,onlyoffice,mysql组成的内部网盘工具，主要用于文档类共享和在线编辑。用到现在，其实还蛮好用的，不过呢，运维的工作量不小。<br>起初搭建的时候，也是在网上找的教程，参考来部署的。本来是打算按照组建来单独部署和连接，但后来发现，对环境的兼容性太差，有很多问题要解决。后来索性就通过docker来部署。真的容易了很多，镜像下载后安装，端口映射，启动，很棒。但是呢，对docker并没有很多使用以及运维经验，完全就是边学边干。后来除了安全漏洞需要升级版本外，没有遇到别的问题。<br>后来呢，很多项目组也用到了这个网盘工具，容器默认的10G空间就不够了，导致文件无法上传。只好扩容，找了一圈，但多数都不是完整版本。我觉得有必要这里记录下过程，方便后续参考。<br>通过docker ps -a 命令，找到要扩容的容器，通过dmsetup 命令，找到对应的虚拟磁盘，通过suspend/reload/resume命令，使扩容后的操作生效。当然，这里边还涉及到扇区的换算公式，直接百度即可。前面一切顺利，但是呢，在配置pool大小的时候，始终无法resume成功，提示invalid arguments。容器以及创建的虚拟目录都存在，但就是无法挂载。后来实在没辙，就重启了docker所在的宿主机。重启后，docker可以正常启动，但是要启动某个容器，发现起不来了。这个时候就把reload/resume命令又重新执行了一遍，mysql和onlyoffice可以起来了，dzzoffice死活起不来。而且每次提示的错误信息还不一致，一会是期望的和实际的磁盘空间不匹配，一会是端口被占用。不匹配的问题，其实再执行一次 reload/resume命令即可，端口被占用的问题，用netstat命令看了也没有被占用，多试了几次后，居然可以了。<br>事后发现，1是在创建容器的时候，没有考虑到后续扩容的事 2是动态扩容的话，会导致容器重启失败的情况 3是对docker的原理不清楚 4是没有及时绑定容器内和宿主机的磁盘目录，导致容器无法启动后数据丢失的风险。<br>对于数据备份，临时方案是定期通过docker cp 命令，手动备份。一种是操作系统级别建立快照，但是无法解决容器损坏的情况。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <div>
+    
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.lichaofan.com/goonmyblog-14.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="RunAnt">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RunAnt's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/goonmyblog-14.html" itemprop="url">说说外包及今日学习心得</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-04-25T17:29:21+08:00">
+                2023-04-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/wlb/" itemprop="url" rel="index">
+                    <span itemprop="name">wlb</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/goonmyblog-14.html#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/goonmyblog-14.html" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  627 字
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  2 分钟
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>国内很多公司都有外包的存在。其实就是一种降低成本以及风险的合同形式，将人按照正式非正式进行区分。<br>如今IT就业形势不好，被裁员了的捉急找工作的，会降维加入外包公司，成为人力资源之一。并不是说外包的工作能力以及态度都很差，但绝大多数都很一般，待遇上除了几个挑头的，普遍偏低，主要是被外包公司拿去了。我的一个底线就是万不得已不去外包，毕竟回头很难。自己也招聘管理过很多外包人员，多数态度还是很好，很尽责。但是因为这种合作形式，很多人都是推一步走一步，对于工作当然可以理解，毕竟干一天有一天的工钱，但是对于自身后续的发展和技能提升方面，其实都比较被动，得过且过的这种想法。也许在某种程度上决定了，在这条路上就是个青春饭。很多前期错过的东西，后续要再拿回来，就会付出更多努力。<br>画图还真是一件耗时费劲的事儿，花了一张系统部署架构图，花了两个半小时。颜色搭配上还是很土，凑合能表达出意思。除了做好本身的系统开发及运维外，还需要不断补充自己的业务知识，流程系统多数都是跨系统间数据交互，能反映出公司在业务管理上的方式方法，但远远不够。金融行业，特别是证券投资领域，整个流程是很复杂的，要在短时间从旁观者的角度，自学了解透，是很难得。最好的办法就是别学别实践，但又没有参与业务运营的机会，只能通过系统文档和系统操作来窥探一二。通过死记概念也是很难，通过理解加运用才是最好的办法，专有名词的理解还是要加强。<br>有时候真觉得很难，感觉是被生活所束缚。看了很多讨论，在这个年纪很多事情，其实就看得很明白了，没必要天天想着发财、逆袭等不切实际的东西。看透现实，适应现实，放下执念，才能在繁杂的生活中，寻找到平衡。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <div>
+    
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://www.lichaofan.com/goonmyblog-13.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -425,7 +799,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.lichaofan.com/goonmyblog-12.html">
+    <link itemprop="mainEntityOfPage" href="https://www.lichaofan.com/goonmyblog-11.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="RunAnt">
@@ -444,7 +818,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/goonmyblog-12.html" itemprop="url">寻找副业之路</a></h1>
+                <a class="post-title-link" href="/goonmyblog-11.html" itemprop="url">寻找副业之路</a></h1>
         
 
         <div class="post-meta">
@@ -497,8 +871,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/goonmyblog-12.html#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/goonmyblog-12.html" itemprop="commentCount"></span>
+                <a href="/goonmyblog-11.html#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/goonmyblog-11.html" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -612,7 +986,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.lichaofan.com/goonmyblog-11.html">
+    <link itemprop="mainEntityOfPage" href="https://www.lichaofan.com/goonmyblog-12.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="RunAnt">
@@ -631,7 +1005,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/goonmyblog-11.html" itemprop="url">寻找副业之路</a></h1>
+                <a class="post-title-link" href="/goonmyblog-12.html" itemprop="url">寻找副业之路</a></h1>
         
 
         <div class="post-meta">
@@ -684,8 +1058,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/goonmyblog-11.html#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/goonmyblog-11.html" itemprop="commentCount"></span>
+                <a href="/goonmyblog-12.html#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/goonmyblog-12.html" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1721,380 +2095,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.lichaofan.com/goonmyblog-5.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RunAnt">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RunAnt's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/goonmyblog-5.html" itemprop="url">人到中年焦虑随想（四）</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-04-12T21:22:29+08:00">
-                2023-04-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/wlb/" itemprop="url" rel="index">
-                    <span itemprop="name">wlb</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/goonmyblog-5.html#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/goonmyblog-5.html" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  918 字
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  3 分钟
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>每日一聊<br>不为别的，只为明天过的更自然、更自由。<br>说两个方面吧，一个是关于人到中年如何更好的规划下半生的人生内容，更好的活出自我，尽量活出自我人生的意义，不是有总结说嘛，人生的成功，就是以自己的方式过完一生。当初读到这句话，其实没能够真正理解，现在终于是晓得一些了，就是要按照自己的路径去过活，而不是环境要求你的那样去生活。一个是关于未来经济形式，切实会影响到个人生活的事情，就是通缩时代的到来。<br>先说说第一件事。对于人生的意义，想想自己现在能坐在格子间里写代码、写文字，也不是自己提前规划的结果，至少不是在上大学的时候。从上初中开始，后续的路都是我自己选的。现在想想，我也是因为初中记忆力比较好，所以在开始方面占有一定的优势，到了高中其实就没那么大了。想到人生后半场的话题，其实是自己一直关注的自媒体博主里有一个，做的关于自己人生的想法及回顾，算是触景生情吧。专业呢，只能待在体制内，出来就没有活路，孩子也高中了，配偶间基本上也是搭伙过日子的情景，自己内心呢，又有些不甘心，也就是自己的人生就这样了吗？可以说四十岁之前都是按部就班，按照社会制定的规则，上学工作结婚买房养娃上学带娃，如此循环，一直到老。仿佛是处在整个社会大机器中的一颗螺丝钉，丝毫没有自己的思想和自由，因为一停下来就会面对很多现实问题，需要面对家庭责任，让自己畏手畏脚。很多事情只能忍和苟，妥协算了，懒得争吵，但其实很憋屈。四十年的摸爬滚打，战战兢兢，才能勉强生存下来，如今还要卷，还要担心随时被裁员，终日活在焦虑之中。很多时候都在想，这样是活着有意义吗？根本没有时间去思考自己的人生意义，疲于奔命而已。看到这位博主的视频，我在想，什么时候我也能挣脱现在格子间的牢笼，回到自由的天地间呢？至少十年后吧。<br>另外件事情，当前的经济形势，通缩在所难免。对于普通个体来讲，其实最关心的就是对自己生活的影响。本次和08年情形完全不同，所以之前的措施参考意义不大。但是比较有现实意义的，我觉得有这几个方面，一是尽量减少负债，周围没有贷款的很少，很多都是房贷车贷，能提前还尽量提前还；二是努力保住目前的工作岗位，做好B计划；三是不要炒股。从一季度工作机会（一线城市帝都为例），环比少了25%以上，再叠加大龄歧视问题，难上加难。要润的难度也增加了很多。自己目前的想法，就是尽量维持目前的收入，同时积极寻求被动收入或者多元收入，虽然一直在寻找，但现在更加迫切。<br>春江水暖鸭先知，水冷也一样。未雨绸缪，总没错。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <div>
-    
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.lichaofan.com/goonmyblog-4.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="RunAnt">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="RunAnt's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/goonmyblog-4.html" itemprop="url">人到中年焦虑随想（三）</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-04-11T22:18:28+08:00">
-                2023-04-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/wlb/" itemprop="url" rel="index">
-                    <span itemprop="name">wlb</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/goonmyblog-4.html#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/goonmyblog-4.html" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  916 字
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  3 分钟
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>每日一剂<br>今天终于有时间试了下arthas，对于排查线上问题还是很有帮助的，目前还不是很熟悉。后续有机会继续了解，并能够通过该工具来定位问题。昨天说到如何设定目标的问题，其实就是方向不明确，就会迷茫并做无用功，最后就是瞎忙。比如说我现在设第一个目标，在一个月内，至少每个工作日要写不少于1K字的日记，无论什么事情，瞎叨叨也行，用以磨练自己的输出表达能力。当然，最好就是把每天工作生活所想所感写出来，能更好的反思和反省就好。<br>北京是沙尘暴天气，早上送孩子上学的路上，特意戴了帽子结果还是被吹飞，一脸尘土。10级大风呼呼的刮着，也许这就是北方的常态吧，在南方无法想象。说这话感觉不像是在北京待了10多年的人，事实就是如此。公司楼外也是黄沙漫天，放水的时间，刷了下论坛，发现最近机会真的很少，不CY降薪就不错了，更别提奖金啥的。在处理外工作内容后，下班后的时间都给了孩子，等到有个人时间的时候，已经是半夜，想做的点啥，发现已经两眼迷瞪。中午吃饭，和同事聊到前段时间比较火的村BA，贵州铜仁。排队的时候就这样遇到了他的一个老乡，看来老乡情节还是最真诚的，后来又聊到如何从山村一步步走到大城市，最终看来都觉得运气居多，也就是早毕业了几年。按部就班的工作买房结婚，感叹要是晚几年可能要多奋斗好几年。如今均已人到中年，职业上也上升无望，感觉自己还能继续上升，其实啊有可能已经在巅峰了。<br>之前在一亩三分地（<a href="https://www.1point3acres.com/）上看到过一边帖子，说的北美一个老哥，已经五十岁了，依然转行学编程，最终拿到offer的历程。当时看了，还真给了自己一些信心，任何时候都要坚持，不要轻易放弃。把找到一份工作作为目标的话，按照达里奥的五步法，则需要对目标进行解析分析，找出其中的真实存在的困难点。针对困难点寻找解决办法，并逐步实践，复盘。这位老哥就是用了八个月时间自学，每天编程8小时以上，自己的亲人也很支持，这么大年纪，很多人都选择躺平，但是呢，他依然要挑战自己。前后投了无数简历，个中经历只能自己体会，就像现在几个月都无法拿到offer的求职者一样，那种心情。" target="_blank" rel="noopener">https://www.1point3acres.com/）上看到过一边帖子，说的北美一个老哥，已经五十岁了，依然转行学编程，最终拿到offer的历程。当时看了，还真给了自己一些信心，任何时候都要坚持，不要轻易放弃。把找到一份工作作为目标的话，按照达里奥的五步法，则需要对目标进行解析分析，找出其中的真实存在的困难点。针对困难点寻找解决办法，并逐步实践，复盘。这位老哥就是用了八个月时间自学，每天编程8小时以上，自己的亲人也很支持，这么大年纪，很多人都选择躺平，但是呢，他依然要挑战自己。前后投了无数简历，个中经历只能自己体会，就像现在几个月都无法拿到offer的求职者一样，那种心情。</a><br>这个经历，其实就说明，只要自己不放弃，就会有适合自己的机会。前提是这是否是你想要的。因为如果被动去做一些事情，是很难长期坚持下去。也许要不是看着前几年程序员好找工作薪资高，也许早就换行了，但是干啥还真不好说。也看了很多人的分享，如何发现自己感兴趣的事情，就是没有任何外界的干扰，自己依然能够忘我的去做的事情，不求回报，这就是自己真正的兴趣所在。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <div>
-    
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2145,7 +2145,7 @@
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">36</span>
+                  <span class="site-state-item-count">38</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2156,7 +2156,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-count">16</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -2167,7 +2167,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-count">24</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -2222,7 +2222,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共48.5k字</span>
+  <span class="post-count">博客全站共49.8k字</span>
 </div>
 <span class="post-meta-divider">|</span>
 
